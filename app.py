@@ -11,24 +11,26 @@ import queue
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dotenv import load_dotenv  # 新增
 from openpyxl import Workbook
+from config import Config
+from utils.table_utils import extract_table_rows
 
 # 加载 .env 文件
 load_dotenv()
 
-UPLOAD_FOLDER = 'uploads'
-RESULTS_FOLDER = 'web_results'
+UPLOAD_FOLDER = Config.UPLOAD_FOLDER
+RESULTS_FOLDER = Config.RESULTS_FOLDER
 ALLOWED_EXTENSIONS = {'pdf', 'jpg', 'jpeg', 'png'}
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'
+app.secret_key = Config.SECRET_KEY
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['RESULTS_FOLDER'] = RESULTS_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(RESULTS_FOLDER, exist_ok=True)
 
 # 配置API密钥（从环境变量读取）
-API_KEY = os.getenv("API_KEY")
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+API_KEY = Config.API_KEY
+DEEPSEEK_API_KEY = Config.DEEPSEEK_API_KEY
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -354,16 +356,7 @@ def generate_table(task_id):
     except Exception as e:
         return jsonify({'status': 'error', 'message': f'AI返回内容无法解析为表格: {str(e)}', 'raw': content}), 500
     # 自动提取 subprojects[].items 合并为表格数组
-    table_rows = []
-    if isinstance(table_data, dict) and 'subprojects' in table_data:
-        for sub in table_data['subprojects']:
-            major = sub.get('major', '')
-            for item in sub.get('items', []):
-                row = dict(item)
-                row['major'] = major  # 增加专业字段
-                table_rows.append(row)
-    else:
-        table_rows = []
+    table_rows = extract_table_rows(table_data)
     # 缓存表格数据
     table_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_table.json')
     with open(table_path, 'w', encoding='utf-8') as f:
@@ -398,4 +391,4 @@ def download_table(task_id):
     return response
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000) 
+    app.run(debug=Config.DEBUG, port=Config.PORT) 
