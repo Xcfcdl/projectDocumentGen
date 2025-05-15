@@ -1,0 +1,61 @@
+{
+    "project_summary": {
+      "project_name": "必填，如XX大厦建设工程",
+      "construction_unit": "必填，建设单位全称",
+      "location": "必填，详细地址",
+      "scale": "如建筑面积5000㎡/地上10层",
+      "structure_type": "如框架剪力墙结构",
+      "duration": "如360日历天"
+    },
+    "basis": {
+      "design_documents": ["施工图（版本V2.0）", "技术说明（编号TJSM-2025）"],
+      "quota_standard": "已知采用《建设工程工程量清单计价规范》GB50500-2013",
+      "material_price_source": "已知引用2025年《XX省建设工程材料信息价》第5期"
+    },
+    "subprojects": [
+      {
+        "major": "土建工程",
+        "items": [
+          {
+            "name": "现浇混凝土梁",
+            "quantity": 500,
+            "unit": "m³",
+            "unit_price": 850,
+            "total_price": 425000,
+            "labor_ratio": "18%",
+            "material_ratio": "70%"
+          }
+        ]
+      }
+    ],
+    "material_prices": [
+      {
+        "name": "螺纹钢HRB400E",
+        "spec": "Φ20mm",
+        "price": 3850,
+        "unit": "元/吨",
+        "source": "已知2025年《XX省建设工程材料信息价》第5期第28页"
+      }
+    ],
+    "special_fees": {
+      "safety_civilized": {
+        "basis": "分部分项工程费合计",
+        "rate": "3.2%"
+      },
+      "winter_construction": "按工期30天×2000元/天计"
+    },
+    "indicators": {
+      "cost_per_sqm": 4200,
+      "steel_per_sqm": 65,
+      "unit": "元/㎡, kg/㎡"
+    },
+    "notes": [
+      "地下存在未探明管线（详见地勘报告QR-2025-05）",
+      "电梯设备采用暂估价650万元"
+    ],
+    "compiler_info": {
+      "company": "XX工程造价咨询有限公司",
+      "certificate": "建[造]025XXXX",
+      "date": "2025-05-14"
+    }
+  }
