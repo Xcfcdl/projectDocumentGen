@@ -61,12 +61,7 @@
   </style>
 </head>
 <body class="bg-light">
-  <header class="header">
-    <div class="container">
-      <h1 class="mb-0">工程图纸结构化提取工具</h1>
-      <p class="mb-0" style="font-size:1.1em;opacity:.85;">一键上传PDF或图片，自动提取工程图纸结构化数据</p>
-    </div>
-  </header>
+  {% include 'header.html' %}
   <div class="container py-5">
     <div class="row justify-content-center">
       <div class="col-md-10">
@@ -93,12 +88,12 @@
                             第 {{ page.number }} 页
                           </label>
                         </div>
-                        <img src="data:image/jpeg;base64,{{ page.preview }}" alt="Page {{ page.number }}">
+                        <img src="{{ url_for('main.get_preview', filename='page_' ~ page.number ~ '.png', task_id=task_id) }}" alt="Page {{ page.number }}">
                       </div>
                     {% endfor %}
                   {% else %}
                     <div class="page-preview">
-                      <img src="data:image/jpeg;base64,{{ file.preview }}" alt="{{ file.name }}">
+                      <img src="{{ url_for('main.get_preview', filename=file.name, task_id=task_id) }}" alt="{{ file.name }}">
                     </div>
                   {% endif %}
                 </div>
@@ -113,9 +108,7 @@
       </div>
     </div>
   </div>
-  <footer class="footer">
-    &copy; {{ 2024 }} 工程图纸结构化提取工具 | Powered by Flask &amp; AI | <a href="https://github.com/" target="_blank" style="color:#0d6efd;text-decoration:none;">GitHub</a>
-  </footer>
+  {% include 'footer.html' %}
 <script>
 function selectAll() {
   document.querySelectorAll('.page-checkbox, .file-checkbox').forEach(checkbox => {

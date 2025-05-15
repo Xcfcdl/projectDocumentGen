@@ -1,0 +1,95 @@
+{
+  "document_info": {
+    "title": "一层平面图",
+    "drawing_number": "无",
+    "date": "无",
+    "designer": "无",
+    "checker": "无",
+    "organization": "无",
+    "revision": "无",
+    "sheet_number": "无",
+    "total_sheets": "无"
+  },
+  "project_info": {
+    "name": "廉政教育基地一层",
+    "location": "无",
+    "scale": "无",
+    "stage": "无",
+    "discipline": "无",
+    "purpose": "无"
+  },
+  "technical_specs": {
+    "dimensions": [
+      {
+        "length": "70000mm",
+        "width": "15800mm",
+        "height": "无"
+      },
+      {
+        "length": "12500mm",
+        "width": "4000mm",
+        "height": "无"
+      },
+      {
+        "length": "2000mm",
+        "width": "无",
+        "height": "无"
+      }
+    ],
+    "materials": [
+      "混凝土",
+      "砖"
+    ],
+    "requirements": [
+      "混凝土道路设计：4米宽度×约12.8米长度（新建），2米×70米长度（修补）",
+      "绿化花圃：种植约50~80公分高、冠幅约50~60公分三角梅，可布置12株。",
+      "走廊1、走廊2及新建台阶的改造设计：混凝土（方案一）、贴砖（方案二）"
+    ]
+  },
+  "quantities": {
+    "items": [
+      {
+        "item": "混凝土道路",
+        "quantity": "4米宽度×约12.8米长度（新建），2米×70米长度（修补）"
+      },
+      {
+        "item": "绿化花圃",
+        "quantity": "12株"
+      }
+    ]
+  },
+  "tables": [],
+  "notes": [
+    "设计说明",
+    "1、混凝土道路设计：4米宽度×约12.8米长度（新建），2米×70米长度（修补）",
+    "2、绿化花圃：种植约50~80公分高、冠幅约50~60公分三角梅，可布置12株。",
+    "3、走廊1、走廊2及新建台阶的改造设计：混凝土（方案一）、贴砖（方案二）"
+  ],
+  "graphics": [
+    {
+      "element": "新建1级台阶",
+      "location": "走廊设计1",
+      "dimensions": {
+        "length": "12500mm",
+        "width": "4000mm",
+        "height": "无"
+      }
+    },
+    {
+      "element": "新建2级台阶",
+      "location": "走廊设计2",
+      "dimensions": {
+        "length": "15800mm",
+        "width": "4000mm",
+        "height": "无"
+      }
+    }
+  ],
+  "annotations": [
+    "用地红线",
+    "道路修补",
+    "新建道路",
+    "三角梅"
+  ],
+  "other_info": {}
+}

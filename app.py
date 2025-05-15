@@ -13,6 +13,10 @@ from dotenv import load_dotenv  # 新增
 from openpyxl import Workbook
 from config import Config
 from utils.table_utils import extract_table_rows
+from routes.table import bp_table
+from routes.main import bp_main
+from loguru import logger
+from services.processing_service import ProcessingService
 
 # 加载 .env 文件
 load_dotenv()
@@ -32,121 +36,24 @@ os.makedirs(RESULTS_FOLDER, exist_ok=True)
 API_KEY = Config.API_KEY
 DEEPSEEK_API_KEY = Config.DEEPSEEK_API_KEY
 
+app.register_blueprint(bp_table)
+app.register_blueprint(bp_main)
+
+# 日志配置
+logger.add("project.log", rotation="10 MB", retention="10 days", level="INFO")
+
+# 全局异常处理
+@app.errorhandler(404)
+def not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(e):
+    logger.exception(e)
+    return render_template('500.html'), 500
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def process_single_image(processor, img_path):
-    try:
-        # 如果已经是压缩图，直接提取，否则先压缩
-        if img_path.endswith('_compressed.jpg'):
-            compressed_path = img_path
-        else:
-            compressed_path = processor.compress_image(img_path)
-        # 只对压缩图做结构化提取
-        result = processor.extract_engineering_data(compressed_path)
-        if isinstance(result, str):
-            try:
-                result = json.loads(result)
-            except json.JSONDecodeError:
-                result = {"error": "Invalid JSON response"}
-        # 只返回原图名和结果
-        return os.path.basename(img_path), result
-    except Exception as e:
-        raise e
-
-def process_task(task_id, selected_files, selected_pages, task_upload_dir):
-    status_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_status.json')
-    result_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_result.json')
-    results_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_results.json')
-    errors_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_errors.json')
-    
-    try:
-        # Initialize status and results files
-        with open(status_path, 'w', encoding='utf-8') as f:
-            json.dump({'status': 'processing', 'total': 0}, f)
-        with open(results_path, 'w', encoding='utf-8') as f:
-            json.dump([], f)
-        with open(errors_path, 'w', encoding='utf-8') as f:
-            json.dump([], f)
-        
-        processor = ImageProcessor(API_KEY)
-        all_image_paths = []
-        
-        # Process selected files
-        for file_path in selected_files:
-            if file_path.lower().endswith('.pdf'):
-                img_dir = os.path.join(task_upload_dir, 'pdf_images')
-                os.makedirs(img_dir, exist_ok=True)
-                all_image_paths.extend(processor.convert_pdf_to_images(file_path, img_dir))
-            else:
-                all_image_paths.append(file_path)
-        
-        # Process selected pages
-        for page_spec in selected_pages:
-            file_path, page_num = page_spec.split(':')
-            page_num = int(page_num)
-            if file_path.lower().endswith('.pdf'):
-                img_dir = os.path.join(task_upload_dir, 'pdf_images')
-                os.makedirs(img_dir, exist_ok=True)
-                doc = fitz.open(file_path)
-                page = doc[page_num - 1]
-                pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
-                page_image_path = os.path.join(img_dir, f'page_{page_num}.png')
-                pix.save(page_image_path)
-                doc.close()
-                all_image_paths.append(page_image_path)
-            else:
-                all_image_paths.append(file_path)
-        
-        # Update total count
-        with open(status_path, 'w', encoding='utf-8') as f:
-            json.dump({'status': 'processing', 'total': len(all_image_paths)}, f)
-        
-        # Process images in parallel with max 5 workers
-        all_results = []
-        with ThreadPoolExecutor(max_workers=5) as executor:
-            future_to_path = {
-                executor.submit(process_single_image, processor, img_path): img_path 
-                for img_path in all_image_paths
-            }
-            for future in as_completed(future_to_path):
-                img_path = future_to_path[future]
-                try:
-                    filename, result = future.result()
-                    if result:
-                        all_results.append(result)
-                        with open(results_path, 'r+', encoding='utf-8') as f:
-                            results = json.load(f)
-                            results.append({
-                                'filename': filename,
-                                'data': result
-                            })
-                            f.seek(0)
-                            json.dump(results, f, ensure_ascii=False)
-                            f.truncate()
-                except Exception as e:
-                    with open(errors_path, 'r+', encoding='utf-8') as f:
-                        errors = json.load(f)
-                        errors.append({
-                            'filename': os.path.basename(img_path),
-                            'message': str(e)
-                        })
-                        f.seek(0)
-                        json.dump(errors, f, ensure_ascii=False)
-                        f.truncate()
-        
-        refiner = DataRefiner(DEEPSEEK_API_KEY)
-        refined_data = refiner.refine_data([r for _, r in all_results])
-        
-        with open(result_path, 'w', encoding='utf-8') as f:
-            json.dump(refined_data, f, ensure_ascii=False, indent=2)
-        
-        with open(status_path, 'w', encoding='utf-8') as f:
-            json.dump({'status': 'done'}, f)
-            
-    except Exception as e:
-        with open(status_path, 'w', encoding='utf-8') as f:
-            json.dump({'status': 'error', 'message': str(e)}, f)
 
 @app.route('/', methods=['GET'])
 def index():
@@ -219,15 +126,15 @@ def process_selection():
     task_id = request.form.get('task_id')
     selected_files = request.form.getlist('selected_files')
     selected_pages = request.form.getlist('selected_pages')
-    
     if not selected_files and not selected_pages:
         flash('请至少选择一个文件或页面')
         return redirect(url_for('index'))
-    
     task_upload_dir = os.path.join(app.config['UPLOAD_FOLDER'], task_id)
-    
     # Start processing in background
-    threading.Thread(target=process_task, args=(task_id, selected_files, selected_pages, task_upload_dir), daemon=True).start()
+    threading.Thread(target=ProcessingService.process_task, args=(
+        task_id, selected_files, selected_pages, task_upload_dir,
+        app.config['RESULTS_FOLDER'], API_KEY, DEEPSEEK_API_KEY
+    ), daemon=True).start()
     return render_template('processing.html', task_id=task_id)
 
 @app.route('/status/<task_id>')

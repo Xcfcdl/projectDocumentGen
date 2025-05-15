@@ -26,12 +26,7 @@
   </style>
 </head>
 <body class="bg-light">
-  <header class="header">
-    <div class="container">
-      <h1 class="mb-0">工程图纸结构化提取工具</h1>
-      <p class="mb-0" style="font-size:1.1em;opacity:.85;">一键上传PDF或图片，自动提取工程图纸结构化数据</p>
-    </div>
-  </header>
+  {% include 'header.html' %}
   <div class="container py-5">
     <div class="row justify-content-center">
       <div class="col-md-10 col-lg-8">
@@ -58,9 +53,7 @@
       </div>
     </div>
   </div>
-  <footer class="footer">
-    &copy; {{ 2024 }} 工程图纸结构化提取工具 | Powered by Flask &amp; AI | <a href="https://github.com/" target="_blank" style="color:#0d6efd;text-decoration:none;">GitHub</a>
-  </footer>
+  {% include 'footer.html' %}
   <script>
     // 获取 task_id
     function getTaskIdFromUrl() {

@@ -23,22 +23,22 @@
     }
     .image-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1rem;
-      padding: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.7rem;
+      padding: 0.5rem;
     }
     .image-card {
       position: relative;
       border: 1px solid #ddd;
-      border-radius: 8px;
+      border-radius: 6px;
       overflow: hidden;
       background: #fff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
     }
     .image-container {
       position: relative;
       width: 100%;
-      padding-top: 75%; /* 4:3 Aspect Ratio */
+      padding-top: 60%; /* 更扁的比例 */
       background: #f8f9fa;
     }
     .image-container img {
@@ -48,6 +48,7 @@
       width: 100%;
       height: 100%;
       object-fit: contain;
+      border-radius: 4px;
     }
     .processing-overlay {
       position: absolute;
@@ -67,11 +68,14 @@
     .image-card.processing .processing-overlay {
       opacity: 1;
     }
+    .p-2 {
+      padding: 0.5rem !important;
+    }
     .result-textarea {
       width: 100%;
-      height: 200px;
+      height: 120px;
       margin-top: 0.5rem;
-      font-size: 0.9em;
+      font-size: 0.85em;
       resize: vertical;
     }
     .progress {
@@ -96,12 +100,7 @@
   </style>
 </head>
 <body class="bg-light">
-  <header class="header">
-    <div class="container">
-      <h1 class="mb-0">工程图纸结构化提取工具</h1>
-      <p class="mb-0" style="font-size:1.1em;opacity:.85;">一键上传PDF或图片，自动提取工程图纸结构化数据</p>
-    </div>
-  </header>
+  {% include 'header.html' %}
   <div class="container-fluid py-4">
     <div class="row justify-content-center">
       <div class="col-12">
@@ -112,15 +111,35 @@
               <div class="progress-bar progress-bar-striped progress-bar-animated" 
                    role="progressbar" style="width: 0%" id="progressBar"></div>
             </div>
+            {% if selected_info %}
+            <div class="mb-4">
+              <h5 class="mb-2">已选择页面/图片：</h5>
+              <div class="page-grid">
+                {% for file in selected_info %}
+                  {% if file.type == 'pdf' %}
+                    {% for page in file.pages %}
+                      <div class="page-preview">
+                        <div class="mb-1 text-center text-muted" style="font-size:0.98em;">{{ file.name }} - 第{{ page.number }}页</div>
+                        <img src="{{ url_for('main.get_preview', filename='page_' ~ page.number ~ '.png', task_id=task_id) }}" alt="{{ file.name }}-第{{ page.number }}页">
+                      </div>
+                    {% endfor %}
+                  {% elif file.type == 'image' %}
+                    <div class="page-preview">
+                      <div class="mb-1 text-center text-muted" style="font-size:0.98em;">{{ file.name }}</div>
+                      <img src="{{ url_for('main.get_preview', filename=file.name, task_id=task_id) }}" alt="{{ file.name }}">
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+            {% endif %}
             <div class="image-grid" id="imageGrid"></div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <footer class="footer">
-    &copy; {{ 2024 }} 工程图纸结构化提取工具 | Powered by Flask &amp; AI | <a href="https://github.com/" target="_blank" style="color:#0d6efd;text-decoration:none;">GitHub</a>
-  </footer>
+  {% include 'footer.html' %}
 <script>
 let totalItems = 0;
 let processedItems = 0;
@@ -129,6 +148,8 @@ let pollInterval = 2000;
 let maxPollInterval = 10000;
 let pollTimeout = null;
 let imageCards = new Map();
+
+const taskId = "{{ task_id }}";
 
 function updateProgress() {
   const progress = (processedItems / totalItems) * 100;
@@ -142,7 +163,7 @@ function createImageCard(filename, imageUrl) {
   
   card.innerHTML = `
     <div class="image-container">
-      <img src="${imageUrl}?task_id={{ task_id }}" alt="${filename}">
+      <img src="${imageUrl}?task_id=${taskId}" alt="${filename}">
       <div class="processing-overlay">
         <div class="spinner-border text-light" role="status"></div>
         <div>正在处理...</div>
