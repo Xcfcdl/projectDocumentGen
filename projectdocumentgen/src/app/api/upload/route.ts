@@ -56,5 +56,6 @@ export async function POST(req: NextRequest) {
       allImages.push(f.name);
     }
   }
+  await fs.writeFile(path.join(uploadDir, '.active'), Date.now().toString());
   return NextResponse.json({ task_id, images: allImages });
 } 
