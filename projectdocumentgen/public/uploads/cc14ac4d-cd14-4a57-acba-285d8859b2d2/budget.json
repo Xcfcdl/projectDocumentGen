@@ -1,0 +1,101 @@
+{
+  "project_summary": {
+    "project_name": "廉政教育基地一层平面图",
+    "construction_unit": "无",
+    "location": "无",
+    "scale": "无",
+    "structure_type": "无",
+    "duration": "无"
+  },
+  "basis": {
+    "design_documents": [
+      "无"
+    ],
+    "quota_standard": "无",
+    "material_price_source": "无"
+  },
+  "subprojects": [
+    {
+      "major": "无",
+      "items": [
+        {
+          "name": "新建道路",
+          "quantity": 1,
+          "unit": "项",
+          "unit_price": "无",
+          "total_price": "无",
+          "labor_ratio": "无",
+          "material_ratio": "无"
+        },
+        {
+          "name": "修复道路",
+          "quantity": 1,
+          "unit": "项",
+          "unit_price": "无",
+          "total_price": "无",
+          "labor_ratio": "无",
+          "material_ratio": "无"
+        },
+        {
+          "name": "绿化带",
+          "quantity": 1,
+          "unit": "项",
+          "unit_price": "无",
+          "total_price": "无",
+          "labor_ratio": "无",
+          "material_ratio": "无"
+        },
+        {
+          "name": "新建台阶",
+          "quantity": 2,
+          "unit": "项",
+          "unit_price": "无",
+          "total_price": "无",
+          "labor_ratio": "无",
+          "material_ratio": "无"
+        },
+        {
+          "name": "走廊",
+          "quantity": 2,
+          "unit": "项",
+          "unit_price": "无",
+          "total_price": "无",
+          "labor_ratio": "无",
+          "material_ratio": "无"
+        },
+        {
+          "name": "三角形区域",
+          "quantity": 12,
+          "unit": "项",
+          "unit_price": "无",
+          "total_price": "无",
+          "labor_ratio": "无",
+          "material_ratio": "无"
+        }
+      ]
+    }
+  ],
+  "material_prices": [],
+  "special_fees": {
+    "safety_civilized": {
+      "basis": "无",
+      "rate": "无"
+    },
+    "winter_construction": "无"
+  },
+  "indicators": {
+    "cost_per_sqm": "无",
+    "steel_per_sqm": "无",
+    "unit": "无"
+  },
+  "notes": [
+    "1. 混凝土道路设计: 4米宽 x 约12.8米长（新建），2米 x 70米长（修复）",
+    "2. 绿化带: 种植约50-80厘米高，约50-60厘米间距，12个三角形区域",
+    "3. 走廊1、走廊2和新台阶改造设计: 混凝土（选项1），砖（选项2）"
+  ],
+  "compiler_info": {
+    "company": "无",
+    "certificate": "无",
+    "date": "无"
+  }
+}

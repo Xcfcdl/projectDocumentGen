@@ -5,7 +5,7 @@ import time
 from flask import Flask, request, render_template, send_file, redirect, url_for, flash, jsonify, Response, make_response
 from werkzeug.utils import secure_filename
 import json
-from pdf_processor import ImageProcessor, DataRefiner
+from projectdocumentgen.pdf_processor import ImageProcessor, DataRefiner
 import fitz  # PyMuPDF for PDF page extraction
 import queue
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -57,129 +57,80 @@ def allowed_file(filename):
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('upload.html')
+    return jsonify({"message": "Engineering Document AI API is running."})
 
 @app.route('/upload', methods=['POST'])
 def upload():
     if 'files' not in request.files:
-        flash('未选择文件')
-        return redirect(request.url)
+        return jsonify({'error': '未选择文件'}), 400
     files = request.files.getlist('files')
     if not files or files[0].filename == '':
-        flash('未选择文件')
-        return redirect(request.url)
-    
+        return jsonify({'error': '未选择文件'}), 400
     task_id = str(uuid.uuid4())
     task_upload_dir = os.path.join(app.config['UPLOAD_FOLDER'], task_id)
     os.makedirs(task_upload_dir, exist_ok=True)
-    
     uploaded_files = []
     for file in files:
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             save_path = os.path.join(task_upload_dir, filename)
             file.save(save_path)
-            
             file_info = {
                 'name': filename,
                 'path': save_path,
                 'type': 'pdf' if filename.lower().endswith('.pdf') else 'image'
             }
-            
-            if file_info['type'] == 'pdf':
-                # Extract PDF previews
-                doc = fitz.open(save_path)
-                file_info['pages'] = []
-                for page_num in range(len(doc)):
-                    page = doc[page_num]
-                    pix = page.get_pixmap(matrix=fitz.Matrix(0.5, 0.5))
-                    img_data = pix.tobytes("jpeg")
-                    import base64
-                    preview = base64.b64encode(img_data).decode()
-                    file_info['pages'].append({
-                        'number': page_num + 1,
-                        'preview': preview
-                    })
-                doc.close()
-            else:
-                # For images, create a preview
-                from PIL import Image
-                import io
-                import base64
-                img = Image.open(save_path)
-                img.thumbnail((800, 800))
-                buffer = io.BytesIO()
-                img.save(buffer, format="JPEG")
-                preview = base64.b64encode(buffer.getvalue()).decode()
-                file_info['preview'] = preview
-            
             uploaded_files.append(file_info)
-    
     if not uploaded_files:
-        flash('文件类型不支持')
-        return redirect(request.url)
-    
-    return render_template('selection.html', task_id=task_id, files=uploaded_files)
+        return jsonify({'error': '文件类型不支持'}), 400
+    return jsonify({"task_id": task_id})
 
 @app.route('/process-selection', methods=['POST'])
 def process_selection():
-    task_id = request.form.get('task_id')
-    selected_files = request.form.getlist('selected_files')
-    selected_pages = request.form.getlist('selected_pages')
+    data = request.get_json()
+    task_id = data.get('task_id')
+    selected_files = data.get('selected_files', [])
+    selected_pages = data.get('selected_pages', [])
     if not selected_files and not selected_pages:
-        flash('请至少选择一个文件或页面')
-        return redirect(url_for('index'))
+        return jsonify({'error': '请至少选择一个文件或页面'}), 400
     task_upload_dir = os.path.join(app.config['UPLOAD_FOLDER'], task_id)
-    # Start processing in background
     threading.Thread(target=ProcessingService.process_task, args=(
         task_id, selected_files, selected_pages, task_upload_dir,
         app.config['RESULTS_FOLDER'], API_KEY, DEEPSEEK_API_KEY
     ), daemon=True).start()
-    return render_template('processing.html', task_id=task_id)
+    return jsonify({'message': 'processing started', 'task_id': task_id})
 
 @app.route('/status/<task_id>')
 def check_status(task_id):
     status_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_status.json')
     results_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_results.json')
     errors_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_errors.json')
-    
     if not os.path.exists(status_path):
         return jsonify({'status': 'processing', 'total': 0})
-    
     with open(status_path, 'r', encoding='utf-8') as f:
         status_data = json.load(f)
-    
-    # Add results and errors to response
     if os.path.exists(results_path):
         with open(results_path, 'r', encoding='utf-8') as f:
             status_data['results'] = json.load(f)
-    
     if os.path.exists(errors_path):
         with open(errors_path, 'r', encoding='utf-8') as f:
             status_data['errors'] = json.load(f)
-    
     return jsonify(status_data)
 
 @app.route('/result/<task_id>')
 def show_result(task_id):
     result_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_result.json')
     if not os.path.exists(result_path):
-        flash('结果文件不存在')
-        return redirect(url_for('index'))
+        return jsonify({'error': '结果文件不存在或任务失败'}), 404
     with open(result_path, 'r', encoding='utf-8') as f:
         json_data = json.load(f)
-    return render_template(
-        'result.html',
-        json_data=json.dumps(json_data, ensure_ascii=False, indent=2),
-        download_url=url_for('download_result', task_id=task_id)
-    )
+    return jsonify({'result': json_data})
 
 @app.route('/download/<task_id>')
 def download_result(task_id):
     result_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_result.json')
     if not os.path.exists(result_path):
-        flash('结果文件不存在')
-        return redirect(url_for('index'))
+        return jsonify({'error': '结果文件不存在'}), 404
     return send_file(result_path, as_attachment=True, download_name=f'{task_id}_result.json')
 
 @app.route('/preview/<filename>')
@@ -229,17 +180,14 @@ def get_preview(filename):
 
 @app.route('/generate-table/<task_id>')
 def generate_table(task_id):
-    """调用 deepseek 整理 json 数据为概算表结构，返回表格数据"""
     result_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_result.json')
     if not os.path.exists(result_path):
         return jsonify({'status': 'error', 'message': '结果文件不存在'}), 404
     with open(result_path, 'r', encoding='utf-8') as f:
         json_data = json.load(f)
-    # 读取概算表结构模板
     template_path = os.path.join('templates', 'datatemplates', '概算.json')
     with open(template_path, 'r', encoding='utf-8') as f:
         template_json = json.load(f)
-    # 构造 prompt，要求 deepseek 严格参考模板结构
     refiner = DataRefiner(DEEPSEEK_API_KEY)
     prompt = (
         "你是一个工程造价数据整理专家。请根据下方的结构模板，结合用户给定的工程资料，整理出完整的工程项目概算表数据。"
@@ -262,9 +210,7 @@ def generate_table(task_id):
         table_data = json.loads(content)
     except Exception as e:
         return jsonify({'status': 'error', 'message': f'AI返回内容无法解析为表格: {str(e)}', 'raw': content}), 500
-    # 自动提取 subprojects[].items 合并为表格数组
     table_rows = extract_table_rows(table_data)
-    # 缓存表格数据
     table_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_table.json')
     with open(table_path, 'w', encoding='utf-8') as f:
         json.dump(table_rows, f, ensure_ascii=False, indent=2)
@@ -272,13 +218,11 @@ def generate_table(task_id):
 
 @app.route('/download-table/<task_id>')
 def download_table(task_id):
-    """将概算表数据导出为 xlsx 文件并下载"""
     table_path = os.path.join(app.config['RESULTS_FOLDER'], f'{task_id}_table.json')
     if not os.path.exists(table_path):
-        return jsonify({'status': 'error', 'message': '请先生成概算表'}), 404
+        return jsonify({'error': '请先生成概算表'}), 404
     with open(table_path, 'r', encoding='utf-8') as f:
         table_data = json.load(f)
-    # 生成 xlsx
     wb = Workbook()
     ws = wb.active
     if table_data and isinstance(table_data, list):

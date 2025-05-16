@@ -1,0 +1,21 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "```json\n{\n  \"title\": \"一层平面图\",\n  \"project_name\": \"廉政教育基地一层\",\n  \"design_unit\": null,\n  \"reviewer\": null,\n  \"date\": null,\n  \"scale\": null,\n  \"phase\": null,\n  \"specialty\": null,\n  \"purpose\": null,\n  \"page_number\": null,\n  \"dimensions\": {\n    \"overall_length\": \"70000\",\n    \"overall_width\": \"70000\",\n    \"new_road_width\": \"412800\",\n    \"new_road_height\": \"4000\",\n    \"staircase_width\": \"12500\",\n    \"staircase_height\": \"1700\",\n    \"corridor_width\": \"15800\",\n    \"corridor_height\": \"1700\",\n    \"triangle_width\": \"300\",\n    \"triangle_height\": \"300\"\n  },\n  \"quantities\": {\n    \"concrete_road_length_new\": \"12.8 meters\",\n    \"concrete_road_length_repair\": \"70 meters\",\n    \"greening_area\": \"50 80 square meters\",\n    \"corridor_and_staircase_design\": \"12 pieces\"\n  },\n  \"specifications\": {\n    \"concrete_road_width_new\": \"4 meters\",\n    \"concrete_road_width_repair\": \"2 meters\",\n    \"greening_specifications\": \"50 60 triangle\"\n  },\n  \"annotations\": {\n    \"design_explanation\": [\n      \"1. Concrete road design: 4m width x 12.8m length (new), 2m x 70m length (repair)\",\n      \"2. Greening area: planting about 50 80 square meters, 50 60 triangle, evenly distributed 12 pieces.\",\n      \"3. Corridor 1, Corridor 2 and new staircase renovation design: concrete (方案一), brick (方案二)\"\n    ]\n  },\n  \"tables\": null,\n  \"graphic_elements\": {\n    \"north_arrow\": true,\n    \"boundaries\": true,\n    \"staircase\": true,\n    \"corridor\": true,\n    \"triangle\": true,\n    \"new_road\": true\n  },\n  \"structural_relationships\": {\n    \"staircase_to_corridor\": \"connected\",\n    \"corridor_to_building\": \"leading to the main building\"\n  },\n  \"intent_and_overview\": \"The drawing shows the layout of the first floor of the廉政教育基地, including the design of new roads, staircases, corridors, and greening areas.\"\n}\n```",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1747299852,
+  "id": "20250515170347d4cf42ac56b54bca",
+  "model": "glm-4v-plus-0111",
+  "request_id": "20250515170347d4cf42ac56b54bca",
+  "usage": {
+    "completion_tokens": 534,
+    "prompt_tokens": 2805,
+    "total_tokens": 3339
+  }
+}

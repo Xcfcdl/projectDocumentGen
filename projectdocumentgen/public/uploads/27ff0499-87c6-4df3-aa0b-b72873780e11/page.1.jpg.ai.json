@@ -1,0 +1,21 @@
+{
+  "choices": [
+    {
+      "finish_reason": "stop",
+      "index": 0,
+      "message": {
+        "content": "```json\n{\n  \"title\": \"一层平面图\",\n  \"numbering\": null,\n  \"date\": null,\n  \"design_unit\": null,\n  \"reviewer\": null,\n  \"drawing_name\": null,\n  \"signature\": null,\n  \"legend\": null,\n  \"scale\": null,\n  \"phase\": null,\n  \"specialty\": null,\n  \"purpose\": null,\n  \"page_number\": null,\n  \"dimensions\": {\n    \"overall_length\": \"70000\",\n    \"overall_width\": \"70000\",\n    \"new_road_width\": \"412800\",\n    \"new_road_height\": \"4000\",\n    \"new_road_step1_width\": \"12500\",\n    \"new_road_step1_height\": \"1700\",\n    \"new_road_step2_width\": \"15800\",\n    \"new_road_step2_height\": \"1700\",\n    \"triangle_pavilion_width\": \"800\",\n    \"triangle_pavilion_height\": \"700\"\n  },\n  \"quantities\": null,\n  \"specifications\": null,\n  \"elevations\": null,\n  \"coordinates\": null,\n  \"area\": null,\n  \"volume\": null,\n  \"weight\": null,\n  \"tables\": null,\n  \"structural_elements\": {\n    \"new_road\": {\n      \"width\": \"412800\",\n      \"height\": \"4000\"\n    },\n    \"triangle_pavilion\": {\n      \"width\": \"800\",\n      \"height\": \"700\"\n    },\n    \"new_road_step1\": {\n      \"width\": \"12500\",\n      \"height\": \"1700\"\n    },\n    \"new_road_step2\": {\n      \"width\": \"15800\",\n      \"height\": \"1700\"\n    }\n  },\n  \"annotations\": {\n    \"design_explanation\": [\n      \"1. 混凝土道路设计：4米宽度×约12.8米长度（新建），2米×70米长度（修补）\",\n      \"2. 绿化范围：种植约50 80公分高、冠幅约50 60公分三角梅，可布置12株。\",\n      \"3. 走廊1、走廊2及新建台阶的改造设计：混凝土（方案一）、贴砖（方案二）\"\n    ]\n  },\n  \"intent_and_overview\": \"The drawing shows a detailed plan of the first floor of a廉政教育基地, including new road construction, landscaping, and renovation of corridors and steps.\"\n}\n```",
+        "role": "assistant"
+      }
+    }
+  ],
+  "created": 1747300424,
+  "id": "202505151713180d3bf403b2f54b31",
+  "model": "glm-4v-plus-0111",
+  "request_id": "202505151713180d3bf403b2f54b31",
+  "usage": {
+    "completion_tokens": 530,
+    "prompt_tokens": 2805,
+    "total_tokens": 3335
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "title": "一层平面图",
+  "numbering": "无",
+  "date": "无",
+  "design_unit": "无",
+  "reviewer": "无",
+  "drawing_name": "无",
+  "signature": "无",
+  "legend": "无",
+  "scale": "无",
+  "phase": "无",
+  "specialty": "无",
+  "purpose": "无",
+  "page_number": "无",
+  "dimensions": {
+    "overall_length": "70000mm",
+    "overall_width": "70000mm",
+    "new_road_width": "412800mm",
+    "new_road_height": "4000mm",
+    "new_road_step1_width": "12500mm",
+    "new_road_step1_height": "1700mm",
+    "new_road_step2_width": "15800mm",
+    "new_road_step2_height": "1700mm",
+    "triangle_pavilion_width": "800mm",
+    "triangle_pavilion_height": "700mm"
+  },
+  "quantities": "无",
+  "specifications": "无",
+  "elevations": "无",
+  "coordinates": "无",
+  "area": "无",
+  "volume": "无",
+  "weight": "无",
+  "tables": "无",
+  "structural_elements": {
+    "new_road": {
+      "width": "412800mm",
+      "height": "4000mm"
+    },
+    "triangle_pavilion": {
+      "width": "800mm",
+      "height": "700mm"
+    },
+    "new_road_step1": {
+      "width": "12500mm",
+      "height": "1700mm"
+    },
+    "new_road_step2": {
+      "width": "15800mm",
+      "height": "1700mm"
+    }
+  },
+  "annotations": {
+    "design_explanation": [
+      "1. 混凝土道路设计：4米宽度×约12.8米长度（新建），2米×70米长度（修补）",
+      "2. 绿化范围：种植约50 80公分高、冠幅约50 60公分三角梅，可布置12株。",
+      "3. 走廊1、走廊2及新建台阶的改造设计：混凝土（方案一）、贴砖（方案二）"
+    ]
+  },
+  "intent_and_overview": "The drawing shows a detailed plan of the first floor of a廉政教育基地, including new road construction, landscaping, and renovation of corridors and steps."
+}
